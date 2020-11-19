@@ -13,11 +13,14 @@
                       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         File
                       </a>
-                      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a v-if="user.isAdmin" data-toggle="modal" data-target="#new-canvas-form" href="" class="list-group-item list-group-item-action tool dropdown-item"><span><i class="fas fa-folder-plus mr-2   "></i></span>Create New</a>
-                           <a @click.prevent="convertToImage" href="" class="list-group-item list-group-item-action tool dropdown-item"><span><i class="fas fa-save  mr-2  "></i></span>Save</a>
-                           <a v-if="user.isAdmin" href="" data-toggle="modal" data-target="#open-recent" class="list-group-item list-group-item-action tool dropdown-item"><span><i class="fas fa-clock mr-2   "></i></span>Open Recent</a>
-                           <a v-if="user.isAdmin" href="" data-toggle="modal" data-target="#queueModal" class="list-group-item list-group-item-action tool dropdown-item"><span><i class="fas fa-draw-polygon  mr-2  "></i></span>Draw Requests</a>
+                      <div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
+                           <a v-if="user.isAdmin" data-toggle="modal" data-target="#new-canvas-form" href="" class="text-light dropdown-item"><span><i class="fas fa-folder-plus mr-2   "></i></span>Create New</a>
+                           <div class="dropdown-divider"></div>
+                           <a @click.prevent="convertToImage" href="" class="text-light dropdown-item"><span><i class="fas fa-save  mr-2  "></i></span>Export to png</a>
+                           <div class="dropdown-divider"></div>
+                           <a v-if="user.isAdmin" href="" data-toggle="modal" data-target="#open-recent" class="text-light dropdown-item"><span><i class="fas fa-clock mr-2   "></i></span>Open Recent</a>
+                           <div class="dropdown-divider"></div>
+                           <a v-if="user.isAdmin" href="" data-toggle="modal" data-target="#queueModal" class="text-light dropdown-item"><span><i class="fas fa-draw-polygon  mr-2  "></i></span>Members Requests</a>
                             
                       </div>
                     </li>
@@ -26,10 +29,12 @@
                       <a :class="{disabled: !user.canEdit}" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Edit
                       </a>
-                      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a href="" :class="{disabled: !user.canEdit}" @click.prevent="canvasRedoOrUndo('undo')" class="list-group-item list-group-item-action tool"><span><i class="fas fa-undo  mr-2  "></i></span>Undo</a>
-                       <a href="" :class="{disabled: !user.canEdit}" @click.prevent="canvasRedoOrUndo('redo')" class="list-group-item list-group-item-action tool"><span><i class="fas fa-redo mr-2   "></i></span>Redo</a>
-                        <a href="" :class="{disabled: !user.canEdit}" @click.prevent="fabricClearWhiteboard()" class="list-group-item list-group-item-action tool"><span><i class="fas fa-trash  mr-2 text-danger "></i></span>Clear</a>
+                      <div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
+                        <a href="" :class="{disabled: !user.canEdit}" @click.prevent="canvasRedoOrUndo('undo')" class="dropdown-item text-light"><span><i class="fas fa-undo  mr-2  "></i></span>Undo</a>
+                        <div class="dropdown-divider"></div>
+                       <a href="" :class="{disabled: !user.canEdit}" @click.prevent="canvasRedoOrUndo('redo')" class="dropdown-item text-light"><span><i class="fas fa-redo mr-2   "></i></span>Redo</a>
+                       <div class="dropdown-divider"></div>
+                      <a href="" :class="{disabled: !user.canEdit}" @click.prevent="fabricClearWhiteboard()" class="dropdown-item text-light"><span><i class="fas fa-trash  mr-2 text-danger "></i></span>Clear</a>
                       </div>
                     </li>
 
@@ -37,12 +42,12 @@
                       <a :class="{disabled: !user.canEdit}" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Shapes
                       </a>
-                      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                             <li><a href="" @click.prevent="fabricCircle" class="dropdown-item"><i class="fas fa-circle m-2   "></i> Circle</a></li>
+                      <div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
+                             <li><a href="" @click.prevent="fabricCircle" class="dropdown-item text-light"><i class="fas fa-circle m-2   "></i> Circle</a></li>
                                 <div class="dropdown-divider"></div>
-                                <li><a href="" @click.prevent="fabricRectangle" class="dropdown-item"> <i class="fas m-2 fa-vector-square    "></i> Rectangle</a></li>
+                                <li><a href="" @click.prevent="fabricRectangle" class="dropdown-item text-light"> <i class="fas m-2 fa-vector-square    "></i> Rectangle</a></li>
                                 <div class="dropdown-divider"></div>
-                                <li><a href="" @click.prevent="fabricTriangle" class="dropdown-item"> <i class="fas m-2 fa-caret-up    "></i> Triangle</a></li>
+                                <li><a href="" @click.prevent="fabricTriangle" class="dropdown-item text-light"> <i class="fas m-2 fa-caret-up    "></i> Triangle</a></li>
                             
                       </div>
                     </li>
@@ -51,9 +56,10 @@
                       <a :class="{disabled: !user.canEdit}" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Free Draw
                       </a>
-                      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                         <a href="" @click.prevent="handDraw('brush')" class="list-group-item list-group-item-action tool dropdown-item"><span><i class="fas fa-paint-brush  mr-2  "></i></span> Brush</a>
-                            <a href="" @click.prevent="handDraw('pen')" class="list-group-item list-group-item-action tool dropdown-item"><span> <i class="fas fa-pen   mr-2 "></i> </span> Pen</a>
+                      <div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
+                         <a href="" @click.prevent="handDraw('brush')" class="text-light dropdown-item"><span><i class="fas fa-paint-brush  mr-2  "></i></span> Brush</a>
+                           <div class="dropdown-divider"></div>
+                          <a href="" @click.prevent="handDraw('pen')" class="text-light dropdown-item"><span> <i class="fas fa-pen   mr-2 "></i> </span> Pen</a>
                       </div>
                     </li>
                     <li class="nav-item  mx-2">
@@ -81,8 +87,8 @@
              <div class="col-md-2">
                <div style="height:85vh;" class="bg-dark">
                     <ul class="list-group active-users bg-dark">
-                        <li class="list-group-item list-group-item-dark"><i class="fas text-success fa-users mr-1"></i><strong class="text-info">{{usersCount}} Active Users</strong></li>
-                        <li v-for="user in currentUsers" :key="user.id"  class="list-group-item list-group-item-dark"> <span><a v-if="user.isAdmin == 1" href="" title="Admin" class="btn"><i class="fas fa-lock text-success  mr-2 "></i></a>
+                        <li class="list-group-item bg-dark"><i class="fas fa-th-list mr-1 text-primary   "></i><strong class="text-info">{{usersCount}} Active Members</strong></li>
+                        <li v-for="user in currentUsers" :key="user.id"  class="list-group-item bg-dark text-light"> <span><a v-if="user.isAdmin == 1" href="" title="Admin" class="btn"><i class="fas fa-lock text-success  mr-2 "></i></a>
                         <a v-else title="Member" href="" class="btn"><i class="fas fa-check  mr-2 text-info "></i></a></span>{{user.name}}
                           <a :title="user.name + ' can edit'" v-show="user.canEdit" class="btn float-right p-0" href=""><span class="badge badge-info">Editing</span></a>
                         </li>
@@ -107,60 +113,67 @@
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content bg-dark text-light">
               <div class="modal-header">
-                  <h5 class="modal-title">Drawing Users Management</h5>
+                  <h5 class="modal-title">Drawing Members Management</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
             <div class="modal-body">
               <div class="container-fluid">
-                <div class="card-header">
-                 <strong class="text-info">Drawing members</strong>
+              <div class="row">
+                <div class="col-md-6">
+                         <div class="card-header">
+                            <strong class="text-info">Waiting members</strong>
+                          </div>
+                          <strong v-if="drawQueue.length < 1" class="text-danger text-center">No waiting users</strong>
+                          <table v-else class="table table-striped table-dark">
+                            <thead>
+                                    <th>#</th>
+                                    <th>Member</th>
+                                    <th>Action</th>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(user,index) in drawQueue" :key="user.id">
+                                        <td>{{index + 1}}</td>
+                                        <td>{{user.name}}</td>
+                                        <td><a href="" class="badge badge-success">waiting in the queue</a></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <th>#</th>
+                                    <th>Member</th>
+                                    <th>Action</th>
+                                </tfoot>
+                          </table>
+                </div>
+                 <div class="col-md-6">
+                    <div class="card-header">
+                      <strong class="text-info">Drawing members</strong>
+                    </div>
+                    <table class="table table-striped table-dark">
+                    <thead>
+                            <th>#</th>
+                            <th>Member</th>
+                            <th>Action</th>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(user,index) in getActiveUsers" :key="user.id">
+                                <td>{{index + 1}}</td>
+                                <td>{{user.name}}</td>
+                                <td v-if="!user.isAdmin"><a href="" @click.prevent="endDrawSession(user.id,drawQueue.length > 0 ? drawQueue[0].id : 0)" class="btn btn-primary btn-sm"><span><i class="fas fa-check mr-2   "></i></span>Terminate</a></td>
+                                <td v-else><a href="" @click.prevent="" class="badge badge-success"><span><i class="fas fa-lock mr-2   "></i></span>Admin</a></td>
+                            
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <th>#</th>
+                            <th>Member</th>
+                            <th>Action</th>
+                        </tfoot>
+                    </table>
+                </div>
               </div>
-               <table class="table table-striped table-dark">
-                 <thead>
-                        <th>#</th>
-                        <th>Member</th>
-                        <th>Action</th>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(user,index) in getActiveUsers" :key="user.id">
-                            <td>{{index + 1}}</td>
-                            <td>{{user.name}}</td>
-                            <td v-if="!user.isAdmin"><a href="" @click.prevent="endDrawSession(user.id,drawQueue.length > 0 ? drawQueue[0].id : 0)" class="btn btn-primary btn-sm"><span><i class="fas fa-check mr-2   "></i></span>Terminate</a></td>
-                            <td v-else><a href="" @click.prevent="" class="btn btn-success btn-sm"><span><i class="fas fa-lock mr-2   "></i></span>Admin</a></td>
-                        
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <th>#</th>
-                        <th>Member</th>
-                        <th>Action</th>
-                    </tfoot>
-               </table>
               </div>
-              <div class="card-header">
-                 <strong class="text-info">Waiting members</strong>
-              </div>
-              <table class="table table-striped table-dark">
-                 <thead>
-                        <th>#</th>
-                        <th>Member</th>
-                        <th>Action</th>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(user,index) in drawQueue" :key="user.id">
-                            <td>{{index + 1}}</td>
-                            <td>{{user.name}}</td>
-                            <td><a href="" class="badge badge-success">waiting in the queue</a></td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <th>#</th>
-                        <th>Member</th>
-                        <th>Action</th>
-                    </tfoot>
-               </table>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -307,7 +320,6 @@ import RecentDrawing from './RecentDrawing'
             Echo.private('terminate').listen('TerminateRequestEvent',(e) => {
               e.users.forEach(user => {
                 if(this.user.id === user.id){
-                 //window.location.reload(true); 
                  window.stop();
                  window.location.href = window.location.href;
               }

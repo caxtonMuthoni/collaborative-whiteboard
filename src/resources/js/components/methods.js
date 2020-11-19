@@ -66,10 +66,10 @@ export default {
             var text = new fabric.IText('Edit text', {
                         width:250,
                         cursorColor :"blue",
-                        top:10,
-                        left:10,
-                        fontSize:12,
-                        fill:'blue',
+                        top:30,
+                        left:300,
+                        fontSize:20,
+                        fill:'#f7f7f7',
                         id: new Date().getUTCMilliseconds(),
                     });
                     this.deleteObject(text.id);

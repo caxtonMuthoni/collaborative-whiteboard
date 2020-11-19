@@ -3,28 +3,17 @@
         <div class="card bg-dark text-light">
             <div class="card-header">Voting for the Leader</div>
             <div class="card-body">
-                <table class="table table-striped table-dark">
-                    <thead>
-                        <th>#</th>
-                        <th>Candidate Name</th>
-                        <th>Votes count</th>
-                        <th>Action</th>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(user,index) in currentUsers" :key="user.id">
-                            <td>{{index + 1}}</td>
-                            <td>{{user.name}}</td>
-                            <td>{{getVotes(user.id)}}</td>
-                            <td><a href="" @click.prevent="vote(user.id)" class="btn btn-success btn-sm"><span><i class="fas fa-check mr-2   "></i></span> Vote</a></td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <th>#</th>
-                        <th>Candidate Name</th>
-                        <th>Votes count</th>
-                        <th>Action</th>
-                    </tfoot>
-                </table>
+                <div class="row">
+                    <div class="col-md-2" v-for="user in currentUsers" :key="user.id">
+                        <div class="card bg-dark card-vote">
+                            <div class="card-body text-center">
+                            <h4 class="card-title">{{user.name}}</h4>
+                                <p class="card-text badge badge-info">{{getVotes(user.id)}}</p> <br>
+                                <a href="" @click.prevent="vote(user.id)" class="btn btn-success btn-sm"><span><i class="fas fa-check mr-2   "></i></span> Vote</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -131,3 +120,9 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+  .card-vote :hover{
+     background: #0275d8;
+  }
+</style>
