@@ -16,7 +16,7 @@
                       <div class="dropdown-menu bg-dark" aria-labelledby="navbarDropdown">
                            <a v-if="user.isAdmin" data-toggle="modal" data-target="#new-canvas-form" href="" class="text-light dropdown-item"><span><i class="fas fa-folder-plus mr-2   "></i></span>Create New</a>
                            <div class="dropdown-divider"></div>
-                           <a @click.prevent="convertToImage" href="" class="text-light dropdown-item"><span><i class="fas fa-save  mr-2  "></i></span>Export to png</a>
+                           <a @click.prevent="exportToPng" href="" class="text-light dropdown-item"><span><i class="fas fa-save  mr-2  "></i></span>Export to png</a>
                            <div class="dropdown-divider"></div>
                            <a v-if="user.isAdmin" href="" data-toggle="modal" data-target="#open-recent" class="text-light dropdown-item"><span><i class="fas fa-clock mr-2   "></i></span>Open Recent</a>
                            <div class="dropdown-divider"></div>
@@ -70,7 +70,7 @@
                     </li>
         
                     <li class="nav-item mx-2">
-                      <a class="nav-link" href="#" v-if="!user.canEdit" @click.prevent="sendRequest" ><span> <i class="fas fa-paper-plane mr-2   "></i></span>Request To Draw</a>
+                      <a class="nav-link" href="#" v-if="!user.canEdit" @click.prevent="requestToDraw" ><span> <i class="fas fa-paper-plane mr-2   "></i></span>Request To Draw</a>
                        <a href="#" title="You are drawing" v-else class="badge badge-primary nav-link">Drawing</a>
                     </li>
                     <li class="nav-item mx-2 float-right">
@@ -193,7 +193,7 @@
                 </button>
             </div>
             <div class="modal-body">
-              <RecentDrawing @openrecent="openRecent"/>
+              <RecentDrawing @openrecent="openRecentWhiteboard"/>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -213,7 +213,7 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form @submit.prevent="createNewCanvas(name)">
+            <form @submit.prevent="createNewWhiteboard(name)">
                <div class="modal-body">
                  <div class="form-group">
                    <label for="name">What is the name of the whiteboard</label>
@@ -242,7 +242,7 @@ import RecentDrawing from './RecentDrawing'
         data() {
             return {
                 msg:'turtututu',
-                canvas: '',
+                whitebaordCanvas: '',
                 usersCount: null,
                 currentUsers: [],
                 objectColor: '#ccc',
@@ -270,33 +270,30 @@ import RecentDrawing from './RecentDrawing'
         mounted() {
             Echo.private('draw')
              .listen('DrawEvent',(e)=>{
-                this.clearListeners();
-                this.loadJson(e.canvas,e.id);
-                this.canvasEventListeners();
-                this.updateCanvasStates(true);
-                // this.updateWhiteboard(this.user);
-                
-                console.log(`lenght state is : ${this.canvasStates.length}`);
+                this.deactivateWhiteboardListeners();
+                this.setStringJsonToCanvas(e.canvas,e.id);
+                this.whiteboardListeners();
+                this.changeWhiteboardStates(true);
             });
 
             Echo.join('draw')
-                .here((users)=>{
-                    this.usersCount = users.length;
-                    this.currentUsers = users;
+                .here((members)=>{
+                    this.usersCount = members.length;
+                    this.currentUsers = members;
                     setTimeout(()=>{
                       this.monitoringLeaderPresence(this.currentUsers);
                     },30000)
                     console.log(this.currentUsers)
                 })
-                .joining((user)=>{
+                .joining((member)=>{
                     this.usersCount += 1;
-                    this.$toaster.success(`${user.name} has joined the group`);
-                    this.currentUsers.push(user);
+                    this.$toaster.success(`${member.name} has joined the group`);
+                    this.currentUsers.push(member);
                 })
-                .leaving((user)=>{
+                .leaving((member)=>{
                     this.usersCount -= 1;
-                    this.$toaster.info(`${user.name} has left the group`);
-                    this.currentUsers = this.currentUsers.filter((userObj)=>user !== userObj);
+                    this.$toaster.error(`${member.name} has left the group`);
+                    this.currentUsers = this.currentUsers.filter((userObj)=>member !== userObj);
                     this.monitoringLeaderPresence(this.currentUsers);
                 });
 
@@ -344,8 +341,8 @@ import RecentDrawing from './RecentDrawing'
 
 
             this.getCanvas();
-            this.canvasEventListeners();
-            this.setColor();
+            this.whiteboardListeners();
+            this.setObjectFillColor();
             this. getCurrentState();
         }
     }

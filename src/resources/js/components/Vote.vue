@@ -8,7 +8,7 @@
                         <div class="card bg-dark card-vote">
                             <div class="card-body text-center">
                             <h4 class="card-title">{{user.name}}</h4>
-                                <p class="card-text badge badge-info">{{getVotes(user.id)}}</p> <br>
+                                <p class="card-text badge badge-info">{{getCadindateVotes(user.id)}}</p> <br>
                                 <a href="" @click.prevent="vote(user.id)" class="btn btn-success btn-sm"><span><i class="fas fa-check mr-2   "></i></span> Vote</a>
                             </div>
                         </div>
@@ -33,14 +33,14 @@ export default {
         
     },
     methods: {
-        getVotes(userId){
+        getCadindateVotes(userId){
             return this.votes.filter((vote)=>vote.candidateId === userId).length;
         },
 
         vote(candidateId){
-            let hasVoted = this.votes.filter((vote)=> vote.userId === this.user.id).length > 0;
-            if(hasVoted){
-                this.$toaster.error(`Sorry you can't vote twice`);
+            let hasMemberVoted = this.votes.filter((vote)=> vote.userId === this.user.id).length > 0;
+            if(hasMemberVoted){
+                this.$toaster.error(`Oops you can't vote twice`);
                 
             }else{
             this.$Progress.start();
@@ -50,7 +50,7 @@ export default {
                                 candidateId: candidateId
                             });
                             this.generateLeader();
-                            this.$swal('Voted Successfully','Please wait for others to complete voting.','success');
+                            this.$swal('Voted Successfully','Congrats, you have voted successfully.','success');
                             this.$Progress.finish();
                         }).catch((error)=>{
                             this.$Progress.fail();

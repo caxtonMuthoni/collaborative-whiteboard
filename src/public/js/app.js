@@ -2093,7 +2093,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   data: function data() {
     return {
       msg: 'turtututu',
-      canvas: '',
+      whitebaordCanvas: '',
       usersCount: null,
       currentUsers: [],
       objectColor: '#ccc',
@@ -2124,37 +2124,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var _this = this;
 
     Echo["private"]('draw').listen('DrawEvent', function (e) {
-      _this.clearListeners();
+      _this.deactivateWhiteboardListeners();
 
-      _this.loadJson(e.canvas, e.id);
+      _this.setStringJsonToCanvas(e.canvas, e.id);
 
-      _this.canvasEventListeners();
+      _this.whiteboardListeners();
 
-      _this.updateCanvasStates(true); // this.updateWhiteboard(this.user);
-
-
-      console.log("lenght state is : ".concat(_this.canvasStates.length));
+      _this.changeWhiteboardStates(true);
     });
-    Echo.join('draw').here(function (users) {
-      _this.usersCount = users.length;
-      _this.currentUsers = users;
+    Echo.join('draw').here(function (members) {
+      _this.usersCount = members.length;
+      _this.currentUsers = members;
       setTimeout(function () {
         _this.monitoringLeaderPresence(_this.currentUsers);
       }, 30000);
       console.log(_this.currentUsers);
-    }).joining(function (user) {
+    }).joining(function (member) {
       _this.usersCount += 1;
 
-      _this.$toaster.success("".concat(user.name, " has joined the group"));
+      _this.$toaster.success("".concat(member.name, " has joined the group"));
 
-      _this.currentUsers.push(user);
-    }).leaving(function (user) {
+      _this.currentUsers.push(member);
+    }).leaving(function (member) {
       _this.usersCount -= 1;
 
-      _this.$toaster.info("".concat(user.name, " has left the group"));
+      _this.$toaster.error("".concat(member.name, " has left the group"));
 
       _this.currentUsers = _this.currentUsers.filter(function (userObj) {
-        return user !== userObj;
+        return member !== userObj;
       });
 
       _this.monitoringLeaderPresence(_this.currentUsers);
@@ -2198,8 +2195,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     });
     this.getCanvas();
-    this.canvasEventListeners();
-    this.setColor();
+    this.whiteboardListeners();
+    this.setObjectFillColor();
     this.getCurrentState();
   }
 });
@@ -2366,7 +2363,7 @@ __webpack_require__.r(__webpack_exports__);
   props: ['user'],
   computed: {},
   methods: {
-    getVotes: function getVotes(userId) {
+    getCadindateVotes: function getCadindateVotes(userId) {
       return this.votes.filter(function (vote) {
         return vote.candidateId === userId;
       }).length;
@@ -2374,12 +2371,12 @@ __webpack_require__.r(__webpack_exports__);
     vote: function vote(candidateId) {
       var _this = this;
 
-      var hasVoted = this.votes.filter(function (vote) {
+      var hasMemberVoted = this.votes.filter(function (vote) {
         return vote.userId === _this.user.id;
       }).length > 0;
 
-      if (hasVoted) {
-        this.$toaster.error("Sorry you can't vote twice");
+      if (hasMemberVoted) {
+        this.$toaster.error("Oops you can't vote twice");
       } else {
         this.$Progress.start();
         axios.post('/voteevent', {
@@ -2392,7 +2389,7 @@ __webpack_require__.r(__webpack_exports__);
 
           _this.generateLeader();
 
-          _this.$swal('Voted Successfully', 'Please wait for others to complete voting.', 'success');
+          _this.$swal('Voted Successfully', 'Congrats, you have voted successfully.', 'success');
 
           _this.$Progress.finish();
         })["catch"](function (error) {
@@ -105231,7 +105228,7 @@ var render = function() {
                               on: {
                                 click: function($event) {
                                   $event.preventDefault()
-                                  return _vm.convertToImage($event)
+                                  return _vm.exportToPng($event)
                                 }
                               }
                             },
@@ -105571,7 +105568,7 @@ var render = function() {
                               on: {
                                 click: function($event) {
                                   $event.preventDefault()
-                                  return _vm.sendRequest($event)
+                                  return _vm.requestToDraw($event)
                                 }
                               }
                             },
@@ -105880,7 +105877,11 @@ var render = function() {
               _c(
                 "div",
                 { staticClass: "modal-body" },
-                [_c("RecentDrawing", { on: { openrecent: _vm.openRecent } })],
+                [
+                  _c("RecentDrawing", {
+                    on: { openrecent: _vm.openRecentWhiteboard }
+                  })
+                ],
                 1
               ),
               _vm._v(" "),
@@ -105917,7 +105918,7 @@ var render = function() {
                   on: {
                     submit: function($event) {
                       $event.preventDefault()
-                      return _vm.createNewCanvas(_vm.name)
+                      return _vm.createNewWhiteboard(_vm.name)
                     }
                   }
                 },
@@ -106549,7 +106550,7 @@ var render = function() {
                   ]),
                   _vm._v(" "),
                   _c("p", { staticClass: "card-text badge badge-info" }, [
-                    _vm._v(_vm._s(_vm.getVotes(user.id)))
+                    _vm._v(_vm._s(_vm.getCadindateVotes(user.id)))
                   ]),
                   _vm._v(" "),
                   _c("br"),
@@ -120432,31 +120433,31 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   getCanvas: function getCanvas() {
-    // var canvas = document.getElementById('mainCanvas');
-    var canvas = new fabric.Canvas('mainCanvas', {
+    var whitebaordCanvas = new fabric.Canvas('mainCanvas', {
       selection: false
     });
-    this.canvas = canvas;
+    this.whitebaordCanvas = whitebaordCanvas;
     this.createCanvasGrid();
-    this.updateCanvasStates(true);
+    this.changeWhiteboardStates(true);
   },
   // Drawing the grid
   createCanvasGrid: function createCanvasGrid() {
-    var grid = 60;
-    var unitScale = 10;
-    var canvasWidth = 120 * unitScale;
-    var canvasHeight = 120 * unitScale;
-    this.canvas.setWidth(canvasWidth);
-    this.canvas.setHeight(canvasHeight);
+    var gridLength = 60;
+    var unitLength = 10;
+    var c_width = 120 * unitLength;
+    var c_height = 120 * unitLength;
+    this.whitebaordCanvas.setWidth(c_width);
+    this.whitebaordCanvas.setHeight(c_height);
     var gridLines = [];
 
-    for (var i = 0; i < canvasWidth / grid; i++) {
-      gridLines.push(new fabric.Line([i * grid, 0, i * grid, canvasHeight], {
+    for (var i = 0; i < c_width / gridLength; i++) {
+      // drawing grid lines and adding them to the  fabric group
+      gridLines.push(new fabric.Line([i * gridLength, 0, i * gridLength, c_height], {
         type: 'line',
         stroke: '#424B54',
         selectable: false
       }));
-      gridLines.push(new fabric.Line([0, i * grid, canvasWidth, i * grid], {
+      gridLines.push(new fabric.Line([0, i * gridLength, c_width, i * gridLength], {
         type: 'line',
         stroke: '#424B54',
         selectable: false
@@ -120468,35 +120469,35 @@ __webpack_require__.r(__webpack_exports__);
       evented: false
     });
     this.gridGroup.addWithUpdate();
-    this.canvas.add(this.gridGroup);
+    this.whitebaordCanvas.add(this.gridGroup);
   },
-  //  Removing the grid
-  removeGrid: function removeGrid() {
-    this.gridGroup && this.canvas.remove(this.gridGroup);
+  //  clearing  the grid
+  clearGridFromCanvas: function clearGridFromCanvas() {
+    this.gridGroup && this.whitebaordCanvas.remove(this.gridGroup);
     this.gridGroup = null;
   },
   //  Fabric free drawing
-  handDraw: function handDraw(type) {
-    if (type === 'pen') {
-      this.canvas.freeDrawingBrush.width = 1;
+  handDraw: function handDraw(selectedTool) {
+    if (selectedTool === 'pen') {
+      this.whitebaordCanvas.freeDrawingBrush.width = 1;
     } else {
-      this.canvas.freeDrawingBrush.width = 10;
+      this.whitebaordCanvas.freeDrawingBrush.width = 10;
     }
 
-    this.canvas.isDrawingMode = 1;
-    this.canvas.freeDrawingBrush.color = "#f7f7f7";
-    this.canvas.renderAll();
+    this.whitebaordCanvas.isDrawingMode = 1;
+    this.whitebaordCanvas.freeDrawingBrush.color = "#f7f7f7";
+    this.whitebaordCanvas.renderAll();
   },
-  removeDrawMode: function removeDrawMode() {
-    this.canvas.isDrawingMode = 0;
+  clearDrawMode: function clearDrawMode() {
+    this.whitebaordCanvas.isDrawingMode = 0;
   },
   setSelectMode: function setSelectMode() {
-    this.removeDrawMode();
+    this.clearDrawMode();
   },
-  // Fabric js Box
+  // Fabric js TextBox
   fabricTextBox: function fabricTextBox() {
-    this.removeDrawMode();
-    var text = new fabric.IText('Edit text', {
+    this.clearDrawMode();
+    var textField = new fabric.IText('Edit text', {
       width: 250,
       cursorColor: "blue",
       top: 30,
@@ -120505,16 +120506,16 @@ __webpack_require__.r(__webpack_exports__);
       fill: '#f7f7f7',
       id: new Date().getUTCMilliseconds()
     });
-    this.deleteObject(text.id);
-    this.canvas.add(text);
+    this.deleteCanvasItem(textField.id);
+    this.whitebaordCanvas.add(textField);
   },
   //  Fabric js Circle
   fabricCircle: function fabricCircle() {
-    this.removeDrawMode();
+    this.clearDrawMode();
     var circle = new fabric.Circle({
       radius: 100,
       fill: this.mainColor,
-      stroke: 'grey',
+      stroke: '#cccccc',
       top: 100,
       left: 100,
       strokeWidth: 3,
@@ -120522,294 +120523,271 @@ __webpack_require__.r(__webpack_exports__);
       originY: 'center',
       id: new Date().getUTCMilliseconds()
     });
-    this.deleteObject(circle.id);
-    this.canvas.add(circle);
+    this.deleteCanvasItem(circle.id);
+    this.whitebaordCanvas.add(circle);
   },
   //  Fabric js Rectangle
   fabricRectangle: function fabricRectangle() {
-    this.removeDrawMode();
+    this.clearDrawMode();
     var rectangle = new fabric.Rect({
       width: 100,
       height: 70,
       fill: this.mainColor,
-      stroke: 'grey',
+      stroke: '#cccccc',
       left: 10,
       top: 20,
       id: new Date().getUTCMilliseconds()
     });
-    this.deleteObject(rectangle.id);
-    this.canvas.add(rectangle);
+    this.deleteCanvasItem(rectangle.id);
+    this.whitebaordCanvas.add(rectangle);
   },
   //  Fabric js Triangle
   fabricTriangle: function fabricTriangle() {
-    this.removeDrawMode();
+    this.clearDrawMode();
     var triangle = new fabric.Triangle({
       width: 100,
       height: 70,
       fill: this.mainColor,
-      stroke: 'grey',
+      stroke: '#cccccc',
       left: 10,
       top: 20,
       id: new Date().getUTCMilliseconds()
     });
-    this.deleteObject(triangle.id);
-    this.canvas.add(triangle);
+    this.deleteCanvasItem(triangle.id);
+    this.whitebaordCanvas.add(triangle);
   },
   // Fabric js Line
   fabricLine: function fabricLine() {
-    this.removeDrawMode();
-    var line = new fabric.Line([50, 100, 200, 200], {
+    this.clearDrawMode();
+    var line = new fabric.Line([100, 200, 200, 200], {
       id: new Date().getUTCMilliseconds(),
-      stroke: 'red',
+      stroke: 'white',
+      strokeWidth: 3,
       left: 170,
       top: 150
     });
-    this.deleteObject(line.id);
-    this.canvas.add(line);
+    this.deleteCanvasItem(line.id);
+    this.whitebaordCanvas.add(line);
   },
-  // Clear canvas
+  // Clear whitebaordCanvas
   fabricClearWhiteboard: function fabricClearWhiteboard() {
-    var isFromEvent = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-    this.clearListeners();
-    this.canvas.clear();
+    var event = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    this.deactivateWhiteboardListeners();
+    this.whitebaordCanvas.clear();
     this.createCanvasGrid();
 
-    if (!isFromEvent) {
-      console.log('cleared');
+    if (!event) {
       this.canvasRedoOrUndo('clear');
     }
 
-    this.canvasEventListeners();
+    this.whiteboardListeners();
   },
   // Event listeners
-  canvasEventListeners: function canvasEventListeners() {
+  whiteboardListeners: function whiteboardListeners() {
     var colorPicker = document.querySelector('.color-picker');
-    var vm = this;
-    this.canvas.on('object:added', function (e) {
-      if (e.target.type !== 'path') {
-        vm.broadCastEvent(e.target, e.target.id);
-        vm.updateCanvasStates(true);
-        vm.updateWhiteboard();
+    var context = this;
+    this.whitebaordCanvas.on('object:added', function (event) {
+      if (event.target.type !== 'path') {
+        context.shareCanvasObject(event.target, event.target.id);
+        context.changeWhiteboardStates(true);
+        context.updateWhiteboardState();
       }
     });
-    this.canvas.on('object:removed', function (e) {
-      vm.broadCastEvent(e.target, e.target.id);
-      vm.updateWhiteboard();
+    this.whitebaordCanvas.on('object:removed', function (event) {
+      context.shareCanvasObject(event.target, event.target.id);
+      context.updateWhiteboardState();
     });
-    this.canvas.on('object:modified', function (e) {
-      vm.broadCastEvent(e.target, e.target.id);
-      vm.updateCanvasStates(true);
-      vm.updateWhiteboard();
+    this.whitebaordCanvas.on('object:modified', function (event) {
+      context.shareCanvasObject(event.target, event.target.id);
+      context.changeWhiteboardStates(true);
+      context.updateWhiteboardState();
     });
-    this.canvas.on('selection:created', function (e) {
+    this.whitebaordCanvas.on('selection:created', function (event) {
       colorPicker.style.display = 'block';
-      vm.activeObject = vm.getSelection();
-      vm.objectId = e.target.id;
+      context.activeObject = context.getActiveObject();
+      context.objectId = event.target.id;
     });
-    this.canvas.on('selection:cleared', function () {
+    this.whitebaordCanvas.on('selection:cleared', function () {
       colorPicker.style.display = 'none';
     });
-    this.canvas.on("path:created", function (opt) {
-      opt.path.id = new Date().getUTCMilliseconds();
-      vm.broadCastEvent(opt.path, opt.path.id);
-      vm.updateCanvasStates(true);
-      vm.updateWhiteboard();
+    this.whitebaordCanvas.on("path:created", function (object) {
+      object.path.id = new Date().getUTCMilliseconds();
+      context.shareCanvasObject(object.path, object.path.id);
+      context.changeWhiteboardStates(true);
+      context.updateWhiteboardState();
     });
   },
-  setColor: function setColor() {
+  setObjectFillColor: function setObjectFillColor() {
     var _this = this;
 
     document.getElementById('color').addEventListener('change', function () {
-      console.log("Color changed");
-      console.log(_this.activeObject);
-
       _this.activeObject.set("fill", _this.objectColor);
 
-      _this.broadCastEvent(_this.activeObject, _this.objectId);
+      _this.shareCanvasObject(_this.activeObject, _this.objectId);
 
-      _this.canvas.renderAll();
+      _this.whitebaordCanvas.renderAll();
     });
   },
-  getSelection: function getSelection() {
-    return this.canvas.getActiveObject() == null ? this.canvas.getActiveGroup() : this.canvas.getActiveObject();
+  getActiveObject: function getActiveObject() {
+    return this.whitebaordCanvas.getActiveObject() == null ? this.whitebaordCanvas.getActiveGroup() : this.whitebaordCanvas.getActiveObject();
   },
-  broadCastEvent: function broadCastEvent(canvasObject, id) {
+  shareCanvasObject: function shareCanvasObject(whiteboardItem, id) {
     axios.post('/draw', {
-      canvas: JSON.stringify(canvasObject.toObject(['id'])),
+      canvas: JSON.stringify(whiteboardItem.toObject(['id'])),
       id: id
     }).then(function (data) {});
   },
-  loadJson: function loadJson(stringJson, id) {
-    // Parse JSON and add objects to canvas
-    this.deleteObject(id);
-    var vm = this;
-    var jsonObj = JSON.parse(stringJson);
-    fabric.util.enlivenObjects([jsonObj], function (enlivenedObjects) {
-      // console.log(enlivenedObjects);
-      vm.clearListeners();
-      enlivenedObjects.forEach(function (obj, index) {
-        vm.canvas.setActiveObject(obj);
-        vm.canvas.add(obj);
+  setStringJsonToCanvas: function setStringJsonToCanvas(jsonString, id) {
+    this.deleteCanvasItem(id);
+    var context = this;
+    var jsonObject = JSON.parse(jsonString);
+    fabric.util.enlivenObjects([jsonObject], function (enlivenedObjects) {
+      context.deactivateWhiteboardListeners();
+      enlivenedObjects.forEach(function (obj) {
+        context.whitebaordCanvas.setActiveObject(obj);
+        context.whitebaordCanvas.add(obj);
       });
-      vm.canvas.renderAll();
-      vm.canvasEventListeners();
+      context.whitebaordCanvas.renderAll();
+      context.whiteboardListeners();
     });
   },
-  deleteObject: function deleteObject(id) {
-    var vm = this;
-    this.canvas.getObjects().forEach(function (object) {
+  deleteCanvasItem: function deleteCanvasItem(id) {
+    var context = this;
+    this.whitebaordCanvas.getObjects().forEach(function (object) {
       if (object.id === id) {
-        console.log("id is ".concat(object.id));
-        vm.canvas.remove(object);
+        context.whitebaordCanvas.remove(object);
       }
     });
   },
-  // Undo or redo canvas
-  canvasRedoOrUndo: function canvasRedoOrUndo(action) {
-    var isEcho = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  // Undo or redo whitebaordCanvas
+  canvasRedoOrUndo: function canvasRedoOrUndo(actionType) {
+    var fromPusher = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-    if (action === 'undo') {
-      if (!isEcho) {
+    if (actionType === 'undo') {
+      if (!fromPusher) {
         this.sendUndoRedoRequest('undo');
       }
 
       if (this.canvasMods < this.canvasStates.length - 1) {
-        console.log("mod is ".concat(this.canvasMods));
-        this.canvas.clear().renderAll();
-        this.clearListeners();
-        this.canvas.loadFromJSON(this.canvasStates[this.canvasStates.length - 1 - this.canvasMods - 1]);
-        this.canvasEventListeners();
-        this.canvas.renderAll();
+        this.whitebaordCanvas.clear().renderAll();
+        this.deactivateWhiteboardListeners();
+        this.whitebaordCanvas.loadFromJSON(this.canvasStates[this.canvasStates.length - 1 - this.canvasMods - 1]);
+        this.whiteboardListeners();
+        this.whitebaordCanvas.renderAll();
         this.canvasMods += 1;
       }
-    } else if (action === 'redo') {
-      console.log("Canvas mod is ".concat(this.canvasMods));
-
-      if (!isEcho) {
+    } else if (actionType === 'redo') {
+      if (!fromPusher) {
         this.sendUndoRedoRequest('redo');
       }
 
       if (this.canvasMods > 0) {
-        this.canvas.clear().renderAll();
-        this.clearListeners();
-        this.canvas.loadFromJSON(this.canvasStates[this.canvasStates.length - 1 - this.canvasMods + 1]);
-        this.canvasEventListeners();
-        this.canvas.renderAll();
+        this.whitebaordCanvas.clear().renderAll();
+        this.deactivateWhiteboardListeners();
+        this.whitebaordCanvas.loadFromJSON(this.canvasStates[this.canvasStates.length - 1 - this.canvasMods + 1]);
+        this.whiteboardListeners();
+        this.whitebaordCanvas.renderAll();
         this.canvasMods -= 1;
       }
-    } else if (action === 'clear') {
-      if (!isEcho) {
+    } else if (actionType === 'clear') {
+      if (!fromPusher) {
         this.sendUndoRedoRequest('clear');
       }
     }
   },
-  updateCanvasStates: function updateCanvasStates(savehistory) {
-    if (savehistory === true) {
-      var myjson = JSON.stringify(this.canvas);
-      this.canvasStates.push(myjson);
+  changeWhiteboardStates: function changeWhiteboardStates(save) {
+    if (save === true) {
+      var newJson = JSON.stringify(this.whitebaordCanvas);
+      this.canvasStates.push(newJson);
     }
   },
   sendUndoRedoRequest: function sendUndoRedoRequest(action) {
     axios.post('/undoredo', {
       action: action
-    }).then(function (n) {
-      console.log("sent");
-    });
+    }).then(function (n) {});
   },
-  clearListeners: function clearListeners() {
-    this.canvas.off('object:added');
-    this.canvas.off('object:removed');
-    this.canvas.off('object:modified');
-    this.canvas.off('path:created');
+  deactivateWhiteboardListeners: function deactivateWhiteboardListeners() {
+    this.whitebaordCanvas.off('object:added');
+    this.whitebaordCanvas.off('object:removed');
+    this.whitebaordCanvas.off('object:modified');
+    this.whitebaordCanvas.off('path:created');
   },
-  // Export canvas to png
-  convertToImage: function convertToImage() {
-    this.canvas.forEachObject(function (object) {
-      object.selectable = false;
-      object.evented = false;
+  // Export whitebaordCanvas to png
+  exportToPng: function exportToPng() {
+    this.whitebaordCanvas.forEachObject(function (obj) {
+      obj.selectable = false;
+      obj.evented = false;
     });
     var downloadLink = document.createElement('a');
     downloadLink.setAttribute('download', 'CanvasAsImage.png');
-    var canvas = document.getElementById('mainCanvas');
-    canvas.toBlob(function (blob) {
-      var url = URL.createObjectURL(blob);
+    var whitebaordCanvas = document.getElementById('mainCanvas');
+    whitebaordCanvas.toBlob(function (blb) {
+      var url = URL.createObjectURL(blb);
       downloadLink.setAttribute('href', url);
       downloadLink.click();
     });
   },
   //   Check if the leader is active
-  monitoringLeaderPresence: function monitoringLeaderPresence(users) {
-    var isAdmin = users.filter(function (user) {
+  monitoringLeaderPresence: function monitoringLeaderPresence(members) {
+    var doesLeaderExist = members.filter(function (user) {
       return user.isAdmin;
     }).length > 0;
 
-    if (!isAdmin) {
+    if (!doesLeaderExist) {
       window.location.href = '/vote';
-    } else {//this.newWhiteboard(this.user);
     }
   },
   // Update whiteboar state
-  newWhiteboard: function newWhiteboard(user, name) {
-    if (user.isAdmin) {
-      this.clearListeners();
-      this.canvas.clear();
+  newWhiteboard: function newWhiteboard(member, whiteboardName) {
+    if (member.isAdmin) {
+      this.deactivateWhiteboardListeners();
+      this.whitebaordCanvas.clear();
       this.createCanvasGrid();
-      this.canvasEventListeners();
+      this.whiteboardListeners();
       axios.post('/whiteboard', {
-        name: name,
-        canvas: JSON.stringify(this.canvas.toObject(['id']))
-      }).then(function () {
-        console.log('Canvas created successfully');
-      })["catch"](function (error) {
-        console.log(error.message);
-      });
+        name: whiteboardName,
+        canvas: JSON.stringify(this.whitebaordCanvas.toObject(['id']))
+      }).then(function () {})["catch"](function (error) {});
     }
   },
   // update whiteboard
-  updateWhiteboard: function updateWhiteboard() {
+  updateWhiteboardState: function updateWhiteboardState() {
     axios.post('/update/whiteboard', {
-      canvas: JSON.stringify(this.canvas.toObject(['id']))
-    }).then(function () {
-      console.log('Canvas updated successfully');
-    })["catch"](function (error) {
-      console.log(error.message);
-    });
+      canvas: JSON.stringify(this.whitebaordCanvas.toObject(['id']))
+    }).then(function () {})["catch"](function (error) {});
   },
   // get current state
   getCurrentState: function getCurrentState() {
     var _this2 = this;
 
-    this.clearListeners();
+    this.deactivateWhiteboardListeners();
     axios.get('/currentstate').then(function (data) {
-      _this2.canvas.clear().renderAll();
+      _this2.whitebaordCanvas.clear().renderAll();
 
-      var jsonObj = JSON.parse(data.data.canvas);
-      console.log(jsonObj);
-      var vm = _this2;
-      fabric.util.enlivenObjects(jsonObj.objects, function (enlivenedObjects) {
-        vm.clearListeners();
-        vm.createCanvasGrid();
-        enlivenedObjects.forEach(function (obj, index) {
-          if (obj.get('type') !== 'group') {
-            vm.canvas.setActiveObject(obj);
-            vm.canvas.add(obj);
+      var parsedJson = JSON.parse(data.data.canvas);
+      var context = _this2;
+      fabric.util.enlivenObjects(parsedJson.objects, function (enlivenedObjects) {
+        context.deactivateWhiteboardListeners();
+        context.createCanvasGrid();
+        enlivenedObjects.forEach(function (object) {
+          if (object.get('type') !== 'group') {
+            context.whitebaordCanvas.setActiveObject(object);
+            context.whitebaordCanvas.add(object);
           }
         });
-        vm.canvas.renderAll();
-        vm.canvasEventListeners();
+        context.whitebaordCanvas.renderAll();
+        context.whiteboardListeners();
       });
-    })["catch"](function (error) {
-      console.log(error.message);
-    });
-    this.canvasEventListeners();
+    })["catch"](function (error) {});
+    this.whiteboardListeners();
   },
   // Request to draw
-  sendRequest: function sendRequest() {
+  requestToDraw: function requestToDraw() {
     var _this3 = this;
 
     this.$Progress.start();
     axios.post('/drawrequest').then(function () {
-      _this3.$swal('Sent', 'Request submitted successfully !!!', 'success');
+      _this3.$swal('Sent', 'Request sent successfully !!!', 'success');
 
       _this3.$Progress.finish();
     })["catch"](function (error) {
@@ -120818,26 +120796,26 @@ __webpack_require__.r(__webpack_exports__);
       _this3.$swal('Sorry !', error.message, 'error');
     });
   },
-  endDrawSession: function endDrawSession(id, id2) {
+  endDrawSession: function endDrawSession(id, uid) {
     var _this4 = this;
 
     this.$Progress.start();
 
     if (this.drawQueue.length < 1) {
-      this.$swal('Sorry', 'There is no user in the drawing queue !!!', 'info');
+      this.$swal('Oops', 'The drawing queue is empty !!!', 'info');
     } else {
-      axios.post("/terminate/".concat(id, "/").concat(id2)).then(function (data) {
-        var user = data.data;
+      axios.post("/terminate/".concat(id, "/").concat(uid)).then(function (data) {
+        var member = data.data;
 
         _this4.currentUsers.forEach(function (cuser) {
-          if (cuser.id === user.id) {
-            user.canEdit = false;
+          if (cuser.id === member.id) {
+            member.canEdit = false;
           }
         });
 
-        _this4.approveDrawRequest();
+        _this4.deleteRequestFromQueue();
 
-        _this4.$swal('Terminated', 'Session terminated successfully !!!', 'success');
+        _this4.$swal('Terminated', 'Session was destroyed successfully !!!', 'success');
 
         _this4.$Progress.finish();
       })["catch"](function (error) {
@@ -120851,18 +120829,18 @@ __webpack_require__.r(__webpack_exports__);
   addRequestToTheQueue: function addRequestToTheQueue(user) {
     this.drawQueue.push(user);
   },
-  // approve draw request
-  approveDrawRequest: function approveDrawRequest() {
+  // delete draw request from the queue
+  deleteRequestFromQueue: function deleteRequestFromQueue() {
     this.drawQueue.shift();
   },
-  createNewCanvas: function createNewCanvas(name) {
+  createNewWhiteboard: function createNewWhiteboard(name) {
     var _this5 = this;
 
     this.$Progress.start();
     axios.post('/newcanvas', {
       name: name
     }).then(function () {
-      _this5.$swal('Success', 'A new canvas was successfully !!!', 'success');
+      _this5.$swal('Success', 'New whitebaordCanvas was created !!!', 'success');
 
       _this5.$Progress.finish();
     })["catch"](function (error) {
@@ -120872,7 +120850,7 @@ __webpack_require__.r(__webpack_exports__);
     });
   },
   // open recent
-  openRecent: function openRecent(id) {
+  openRecentWhiteboard: function openRecentWhiteboard(id) {
     var _this6 = this;
 
     this.$Progress.start();
