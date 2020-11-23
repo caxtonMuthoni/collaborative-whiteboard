@@ -52,7 +52,7 @@
                       </div>
                     </li>
 
-                    <li class="nav-item dropdown  mx-2">
+                    <!-- <li class="nav-item dropdown  mx-2">
                       <a :class="{disabled: !user.canEdit}" class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Free Draw
                       </a>
@@ -61,7 +61,7 @@
                            <div class="dropdown-divider"></div>
                           <a href="" @click.prevent="handDraw('pen')" class="text-light dropdown-item"><span> <i class="fas fa-pen   mr-2 "></i> </span> Pen</a>
                       </div>
-                    </li>
+                    </li> -->
                     <li class="nav-item  mx-2">
                       <a class="nav-link" href="#" @click.prevent="fabricTextBox" :class="{disabled: !user.canEdit}" ><span><i class="mr-2 fas fa-text-width    "></i></span>Text</a>
                     </li>
@@ -77,10 +77,10 @@
                       
                     </li>
                   </ul>
-                   <form class="form-inline my-2 my-lg-0 color-picker" style="display:none;">
+                   <!-- <form class="form-inline my-2 my-lg-0 color-picker" style="display:none;">
                      <a href="" class=" disabled badge badge-info my-2 my-sm-0">Set Fill color</a>
                       <input style="width:50px;" class="form-control mr-sm-2" type="color" v-model="objectColor" name="color" id="color">
-                    </form>
+                    </form> -->
                 </div>
               </nav>
           </div>

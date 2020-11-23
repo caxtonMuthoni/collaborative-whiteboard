@@ -105458,70 +105458,6 @@ var render = function() {
                       )
                     ]),
                     _vm._v(" "),
-                    _c("li", { staticClass: "nav-item dropdown  mx-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "nav-link dropdown-toggle",
-                          class: { disabled: !_vm.user.canEdit },
-                          attrs: {
-                            href: "#",
-                            id: "navbarDropdown",
-                            role: "button",
-                            "data-toggle": "dropdown",
-                            "aria-haspopup": "true",
-                            "aria-expanded": "false"
-                          }
-                        },
-                        [
-                          _vm._v(
-                            "\n                    Free Draw\n                  "
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass: "dropdown-menu bg-dark",
-                          attrs: { "aria-labelledby": "navbarDropdown" }
-                        },
-                        [
-                          _c(
-                            "a",
-                            {
-                              staticClass: "text-light dropdown-item",
-                              attrs: { href: "" },
-                              on: {
-                                click: function($event) {
-                                  $event.preventDefault()
-                                  return _vm.handDraw("brush")
-                                }
-                              }
-                            },
-                            [_vm._m(8), _vm._v(" Brush")]
-                          ),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "dropdown-divider" }),
-                          _vm._v(" "),
-                          _c(
-                            "a",
-                            {
-                              staticClass: "text-light dropdown-item",
-                              attrs: { href: "" },
-                              on: {
-                                click: function($event) {
-                                  $event.preventDefault()
-                                  return _vm.handDraw("pen")
-                                }
-                              }
-                            },
-                            [_vm._m(9), _vm._v(" Pen")]
-                          )
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
                     _c("li", { staticClass: "nav-item  mx-2" }, [
                       _c(
                         "a",
@@ -105536,7 +105472,7 @@ var render = function() {
                             }
                           }
                         },
-                        [_vm._m(10), _vm._v("Text")]
+                        [_vm._m(8), _vm._v("Text")]
                       )
                     ]),
                     _vm._v(" "),
@@ -105554,7 +105490,7 @@ var render = function() {
                             }
                           }
                         },
-                        [_vm._m(11), _vm._v(" Line")]
+                        [_vm._m(9), _vm._v(" Line")]
                       )
                     ]),
                     _vm._v(" "),
@@ -105572,7 +105508,7 @@ var render = function() {
                                 }
                               }
                             },
-                            [_vm._m(12), _vm._v("Request To Draw")]
+                            [_vm._m(10), _vm._v("Request To Draw")]
                           )
                         : _c(
                             "a",
@@ -105585,49 +105521,7 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("li", { staticClass: "nav-item mx-2 float-right" })
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "form",
-                    {
-                      staticClass: "form-inline my-2 my-lg-0 color-picker",
-                      staticStyle: { display: "none" }
-                    },
-                    [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            " disabled badge badge-info my-2 my-sm-0",
-                          attrs: { href: "" }
-                        },
-                        [_vm._v("Set Fill color")]
-                      ),
-                      _vm._v(" "),
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.objectColor,
-                            expression: "objectColor"
-                          }
-                        ],
-                        staticClass: "form-control mr-sm-2",
-                        staticStyle: { width: "50px" },
-                        attrs: { type: "color", name: "color", id: "color" },
-                        domProps: { value: _vm.objectColor },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.objectColor = $event.target.value
-                          }
-                        }
-                      })
-                    ]
-                  )
+                  ])
                 ]
               )
             ]
@@ -105719,7 +105613,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _vm._m(13)
+        _vm._m(11)
       ]
     ),
     _vm._v(" "),
@@ -105741,13 +105635,13 @@ var render = function() {
           { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
           [
             _c("div", { staticClass: "modal-content bg-dark text-light" }, [
-              _vm._m(14),
+              _vm._m(12),
               _vm._v(" "),
               _c("div", { staticClass: "modal-body" }, [
                 _c("div", { staticClass: "container-fluid" }, [
                   _c("div", { staticClass: "row" }, [
                     _c("div", { staticClass: "col-md-6" }, [
-                      _vm._m(15),
+                      _vm._m(13),
                       _vm._v(" "),
                       _vm.drawQueue.length < 1
                         ? _c(
@@ -105759,7 +105653,7 @@ var render = function() {
                             "table",
                             { staticClass: "table table-striped table-dark" },
                             [
-                              _vm._m(16),
+                              _vm._m(14),
                               _vm._v(" "),
                               _c(
                                 "tbody",
@@ -105769,25 +105663,25 @@ var render = function() {
                                     _vm._v(" "),
                                     _c("td", [_vm._v(_vm._s(user.name))]),
                                     _vm._v(" "),
-                                    _vm._m(17, true)
+                                    _vm._m(15, true)
                                   ])
                                 }),
                                 0
                               ),
                               _vm._v(" "),
-                              _vm._m(18)
+                              _vm._m(16)
                             ]
                           )
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-md-6" }, [
-                      _vm._m(19),
+                      _vm._m(17),
                       _vm._v(" "),
                       _c(
                         "table",
                         { staticClass: "table table-striped table-dark" },
                         [
-                          _vm._m(20),
+                          _vm._m(18),
                           _vm._v(" "),
                           _c(
                             "tbody",
@@ -105816,7 +105710,7 @@ var render = function() {
                                             }
                                           }
                                         },
-                                        [_vm._m(21, true), _vm._v("Terminate")]
+                                        [_vm._m(19, true), _vm._v("Terminate")]
                                       )
                                     ])
                                   : _c("td", [
@@ -105831,7 +105725,7 @@ var render = function() {
                                             }
                                           }
                                         },
-                                        [_vm._m(22, true), _vm._v("Admin")]
+                                        [_vm._m(20, true), _vm._v("Admin")]
                                       )
                                     ])
                               ])
@@ -105839,7 +105733,7 @@ var render = function() {
                             0
                           ),
                           _vm._v(" "),
-                          _vm._m(23)
+                          _vm._m(21)
                         ]
                       )
                     ])
@@ -105847,7 +105741,7 @@ var render = function() {
                 ])
               ]),
               _vm._v(" "),
-              _vm._m(24)
+              _vm._m(22)
             ])
           ]
         )
@@ -105872,7 +105766,7 @@ var render = function() {
           { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
           [
             _c("div", { staticClass: "modal-content bg-dark text-light" }, [
-              _vm._m(25),
+              _vm._m(23),
               _vm._v(" "),
               _c(
                 "div",
@@ -105885,7 +105779,7 @@ var render = function() {
                 1
               ),
               _vm._v(" "),
-              _vm._m(26)
+              _vm._m(24)
             ])
           ]
         )
@@ -105910,7 +105804,7 @@ var render = function() {
           { staticClass: "modal-dialog bg-dark", attrs: { role: "document" } },
           [
             _c("div", { staticClass: "modal-content bg-dark text-light" }, [
-              _vm._m(27),
+              _vm._m(25),
               _vm._v(" "),
               _c(
                 "form",
@@ -105958,7 +105852,7 @@ var render = function() {
                     ])
                   ]),
                   _vm._v(" "),
-                  _vm._m(28)
+                  _vm._m(26)
                 ]
               )
             ])
@@ -106032,18 +105926,6 @@ var staticRenderFns = [
     return _c("span", [
       _c("i", { staticClass: "fas fa-trash  mr-2 text-danger " })
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("span", [_c("i", { staticClass: "fas fa-paint-brush  mr-2  " })])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("span", [_c("i", { staticClass: "fas fa-pen   mr-2 " })])
   },
   function() {
     var _vm = this
